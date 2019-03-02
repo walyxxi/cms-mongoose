@@ -8,6 +8,9 @@ mongoose.connect('mongodb://localhost:27017/c30', { useNewUrlParser: true })
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var datasRouter = require('./routes/datas');
+var datadatesRouter = require('./routes/datadates');
+var mapsRouter = require('./routes/maps');
 
 var app = express();
 
@@ -22,5 +25,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/datas', datasRouter);
+app.use('/api/datadates', datadatesRouter);
+app.use('/api/maps', mapsRouter);
 
 module.exports = app;

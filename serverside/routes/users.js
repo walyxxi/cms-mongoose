@@ -6,7 +6,7 @@ var config = require('../helpers/config');
 const User = require('../models/user');
 
 /* GET users listing. */
-router.get('/', (req, res, next) => {
+router.get('/', (req, res) => {
   User.find().then(data => {
     res.json(data);
   }).catch(err => {
@@ -14,7 +14,7 @@ router.get('/', (req, res, next) => {
   })
 })
 
-router.post('/register', (req, res, next) => {
+router.post('/register', (req, res) => {
   let x = req.body;
   User.findOne({ email: x.email }, (err, userData) => {
     if (err) return res.status(500).send('There was problem finding the User!')
@@ -51,7 +51,7 @@ router.post('/register', (req, res, next) => {
   })
 })
 
-router.post('/login', (req, res, next) => {
+router.post('/login', (req, res) => {
   let x = req.body;
   User.findOne({ email: x.email }, (err, userData) => {
     let passwordIsValid = bcrypt.compareSync(x.password, userData.password);
@@ -82,26 +82,28 @@ router.post('/login', (req, res, next) => {
   })
 })
 
-router.post('/check', (req, res, next) => {
+router.post('/check', (req, res) => {
   let token = req.headers['x-access-token'];
-  if (!token) return res.status(401).send({ valid: false, message: 'No token provided' });
-  jwt.verify(token, config.secret, (err) => {
+  jwt.verify(token, config.secret, (err, verifyToken) => {
     if (err) {
-      res.json({ valid: false })
+      res.status(401).send({ valid: false })
     } else {
-      res.json({ valid: true })
+      res.status(200).send({ valid: true })
     }
   })
 })
 
-router.get('/destroy', (req, res, next) => {
-  let x = req.body;
-  User.updateOne({ email: x.email }, { $set: {token: null} }, (err) => {
-    if (err) {
-      res.json({ logout: false })
-    } else {
-      res.json({ logout: true })
-    }
+router.get('/destroy', (req, res) => {
+  let token = req.headers['x-access-token'];
+  jwt.verify(token, config.secret, (err, verifyToken) => {
+    if (err) return res.status(500).send('Token is invalid!')
+    User.updateOne({ email: verifyToken.email }, { $set: {token: null} }, (err) => {
+      if (err) {
+        res.status(500).send({ logout: false })
+      } else {
+        res.status(200).send({ logout: true })
+      }
+    })
   })
 })
 
