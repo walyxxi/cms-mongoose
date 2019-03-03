@@ -32,6 +32,7 @@ describe('datadates', () => {
             res.body[0].should.have.property('_id');
             res.body[0].should.have.property('letter');
             res.body[0].should.have.property('frequency');
+            res.body[0]._id.should.be.a('string');
             res.body[0].letter.should.equal('2019-02-25');
             res.body[0].frequency.should.equal(1.1);
             done();
@@ -76,6 +77,7 @@ describe('datadates', () => {
             res.body[0].should.have.property('_id');
             res.body[0].should.have.property('letter');
             res.body[0].should.have.property('frequency');
+            res.body[0]._id.should.be.a('string');
             res.body[0].letter.should.equal('2019-02-25');
             res.body[0].frequency.should.equal(1.1);
             done();
@@ -127,8 +129,8 @@ describe('datadates', () => {
                 res.body.success.should.equal(true);
                 res.body.message.should.equal('Data have been updated!');
                 res.body.data._id.should.be.a('string');
-                res.body.data.letter.should.equal('2019-02-25');
-                res.body.data.frequency.should.equal(1.1);
+                res.body.data.letter.should.equal('2019-02-28');
+                res.body.data.frequency.should.equal(1.2);
                 done();
             })
         })

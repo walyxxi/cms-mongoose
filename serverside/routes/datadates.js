@@ -88,7 +88,7 @@ router.put('/:id', (req, res) => {
             letter: x.letter,
             frequency: x.frequency
         }
-    }).then(data => {
+    }, {new: true}).then(data => {
         res.status(200).send({
             success: true,
             message: 'Data have been updated!',

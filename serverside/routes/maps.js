@@ -68,7 +68,7 @@ router.put('/:id', (req, res) => {
             lat: x.lat,
             lng: x.lng
         }
-    }).then(data => {
+    }, {new: true}).then(data => {
         res.status(200).send({
             success: true,
             message: 'Data have been updated!',
