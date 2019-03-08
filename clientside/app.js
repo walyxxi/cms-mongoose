@@ -92,7 +92,7 @@ passport.use('local-login', new LocalStrategy({
       .send({ email, password })
       .set('Accept', 'apllication/json')
       .then(res => {
-        if (!res.body.err) {
+        if (!res.body.error) {
           return done(null, res.body.data)
         } else {
           return done(null, false, req.flash('loginMessage', res.body.message))

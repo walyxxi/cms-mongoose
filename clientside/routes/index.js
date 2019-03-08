@@ -3,13 +3,13 @@ var router = express.Router();
 var passport = require('passport');
 const helpers = require('../helpers/util');
 
-router.get('/', function (req, res, next) {
+router.get('/', (req, res) => {
     res.render('dashboard', { title: 'Dashboard' });
 });
 
 // SIGNUP =================================
 // show the signup form
-router.get('/register', function (req, res) {
+router.get('/register', (req, res) => {
     res.render('register', { title: 'Register', message: req.flash('registerMessage') });
 });
 
@@ -22,7 +22,7 @@ router.post('/register', passport.authenticate('local-register', {
 
 // SIGNIN =================================
 // show the signin form
-router.get('/login', function (req, res) {
+router.get('/login', (req, res) => {
     res.render('login', { title: 'Login', message: req.flash('loginMessage') });
 });
 
@@ -33,14 +33,16 @@ router.post('/login', passport.authenticate('local-login', {
     failureFlash: true // allow flash messages
 }));
 
-router.get('/home', helpers.isLoggedIn, function(req, res) {
+router.get('/home', helpers.isLoggedIn, (req, res) => {
     res.render('home', {
-        data : req.user
+        data : req.user,
+        nav: nav = 1,
+        title: 'Home'
     });
 });
 
 // LOGOUT ==============================
-router.get('/logout', function(req, res) {
+router.get('/logout', (req, res) => {
     req.logout();
     res.redirect('/');
 });

@@ -67,25 +67,33 @@ router.post('/login', (req, res) => {
   let x = req.body;
   User.findOne({ email: x.email }, (err, userData) => {
     let passwordIsValid = bcrypt.compareSync(x.password, userData.password);
-    if (err) return res.json('There was problem finding the User!')
+    if (err) {
+      response.error = true
+      response.message = 'There was problem finding the User!'
+      return res.json(response)
+    }
     if (!userData) {
       response.error = true
       response.message = `Email '${x.email}' is invalid!`
-      res.json({ response })
+      res.json(response)
     } else if (!passwordIsValid) {
       response.error = true
       response.message = `Password is invalid!`
-      res.json({ response })
+      res.json(response)
     } else {
       let token = jwt.sign({ email: x.email }, config.secret, {
         expiresIn: 86400 // 24 Hours
       })
       User.updateOne({ email: x.email }, { $set: { token: token } }, (err) => {
-        if (err) return res.json('There was problem updating User Token!')
-        response.error = false
-          response.message = 'The registration success!'
-          response.data = { email: x.email, token };
+        if (err) {
+          response.error = true
+          response.message = 'There was problem updating User Token!'
           return res.json(response)
+        }
+        response.error = false
+        response.message = 'The registration success!'
+        response.data = { email: x.email, token };
+        return res.json(response)
       })
     }
   })
