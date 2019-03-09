@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
+var request = require('superagent');
 const helpers = require('../helpers/util');
 
 router.get('/', (req, res) => {
@@ -34,17 +35,25 @@ router.post('/login', passport.authenticate('local-login', {
 }));
 
 router.get('/home', helpers.isLoggedIn, (req, res) => {
-    res.render('home', {
-        data : req.user,
-        nav: nav = 1,
-        title: 'Home'
-    });
+    res.render('home', { title: 'Home', data: req.user, nav: 1 });
 });
 
+router.get('/data', helpers.isLoggedIn, (req, res) => {
+    res.render('data', { title: 'Data', data: req.data, nav: 2 });
+})
+
 // LOGOUT ==============================
-router.get('/logout', (req, res) => {
-    req.logout();
-    res.redirect('/');
+router.get('/logout', (req, res, done) => {
+    request
+        .get('http://localhost:3001/api/users/destroy')
+        .set('x-access-token', req.user.token)
+        .then(res => {
+            return done(null, req.logout());
+        })
+        .catch(err => {
+            if (err) return done(null, false, req.flash('Something is wrong, please call your administrator'));
+        })
+        res.redirect('/');
 });
 
 module.exports = router;
