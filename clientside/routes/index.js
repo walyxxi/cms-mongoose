@@ -8,6 +8,18 @@ router.get('/', (req, res) => {
     res.render('dashboard', { title: 'Dashboard' });
 });
 
+router.get('/line', (req, res) => {
+    res.render('line', { title: 'Line', data: req.user });
+});
+
+router.get('/pie', (req, res) => {
+    res.render('pie', { title: 'Pie', data: req.user });
+});
+
+router.get('/bar', (req, res) => {
+    res.render('bar', { title: 'Bar', data: req.user });
+});
+
 // SIGNUP =================================
 // show the signup form
 router.get('/register', (req, res) => {
@@ -39,21 +51,23 @@ router.get('/home', helpers.isLoggedIn, (req, res) => {
 });
 
 router.get('/data', helpers.isLoggedIn, (req, res) => {
-    res.render('data', { title: 'Data', data: req.data, nav: 2 });
+    res.render('data', { title: 'Data', data: req.user, nav: 2 });
 })
 
 // LOGOUT ==============================
-router.get('/logout', (req, res, done) => {
+router.get('/logout', (req, res) => {
     request
         .get('http://localhost:3001/api/users/destroy')
         .set('x-access-token', req.user.token)
         .then(res => {
-            return done(null, req.logout());
+            req.logout();
+            res.redirect('/');
         })
         .catch(err => {
-            if (err) return done(null, false, req.flash('Something is wrong, please call your administrator'));
+            req.flash('Something is wrong, please call your administrator')
+            res.redirect('/');
         })
-        res.redirect('/');
+        
 });
 
 module.exports = router;

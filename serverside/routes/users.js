@@ -66,7 +66,6 @@ router.post('/register', (req, res) => {
 router.post('/login', (req, res) => {
   let x = req.body;
   User.findOne({ email: x.email }, (err, userData) => {
-    let passwordIsValid = bcrypt.compareSync(x.password, userData.password);
     if (err) {
       response.error = true
       response.message = 'There was problem finding the User!'
@@ -74,27 +73,30 @@ router.post('/login', (req, res) => {
     }
     if (!userData) {
       response.error = true
-      response.message = `Email '${x.email}' is invalid!`
-      res.json(response)
-    } else if (!passwordIsValid) {
-      response.error = true
-      response.message = `Password is invalid!`
+      response.message = `Email '${x.email}' not registered!`
       res.json(response)
     } else {
-      let token = jwt.sign({ email: x.email }, config.secret, {
-        expiresIn: 86400 // 24 Hours
-      })
-      User.updateOne({ email: x.email }, { $set: { token: token } }, (err) => {
-        if (err) {
-          response.error = true
-          response.message = 'There was problem updating User Token!'
+      let passwordIsValid = bcrypt.compareSync(x.password, userData.password);
+      if (!passwordIsValid) {
+        response.error = true
+        response.message = `Password is invalid!`
+        res.json(response)
+      } else {
+        let token = jwt.sign({ email: x.email }, config.secret, {
+          expiresIn: 86400 // 24 Hours
+        })
+        User.updateOne({ email: x.email }, { $set: { token: token } }, (err) => {
+          if (err) {
+            response.error = true
+            response.message = 'There was problem updating User Token!'
+            return res.json(response)
+          }
+          response.error = false
+          response.message = 'The registration success!'
+          response.data = { email: x.email, token };
           return res.json(response)
-        }
-        response.error = false
-        response.message = 'The registration success!'
-        response.data = { email: x.email, token };
-        return res.json(response)
-      })
+        })
+      }
     }
   })
 })

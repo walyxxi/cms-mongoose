@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const helpers = require('../helpers/util');
 const Data = require('../models/data');
 
 router.get('/', (req, res) => {
@@ -10,7 +11,7 @@ router.get('/', (req, res) => {
     })
 })
 
-router.post('/', (req, res) => {
+router.post('/', helpers.checkToken, (req, res) => {
     let x = req.body;
     Data.create({
         letter: x.letter,
@@ -30,7 +31,7 @@ router.post('/', (req, res) => {
     })
 })
 
-router.post('/search', (req, res) => {
+router.post('/search', helpers.checkToken, (req, res) => {
     let x = req.body;
     let params = {};
     if (x.letter) {
@@ -46,7 +47,7 @@ router.post('/search', (req, res) => {
     })
 })
 
-router.get('/:id', (req, res) => {
+router.get('/:id', helpers.checkToken, (req, res) => {
     let id = req.params.id;
     Data.findOne({_id: id}).then(data => {
         res.status(200).send({
@@ -63,10 +64,10 @@ router.get('/:id', (req, res) => {
     })
 })
 
-router.put('/:id', (req, res) => {
+router.put('/:id', helpers.checkToken, (req, res) => {
     let x = req.body;
     let id = req.params.id;
-    Data.findOneAndUpdate({_id: id}, { $set: {
+    Data.updateOne({_id: id}, { $set: {
             letter: x.letter,
             frequency: x.frequency
         }
@@ -85,7 +86,7 @@ router.put('/:id', (req, res) => {
     })
 })
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', helpers.checkToken, (req, res) => {
     let id = req.params.id;
     Data.findOneAndDelete({_id: id}).then(data => {
         res.status(200).send({

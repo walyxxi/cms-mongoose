@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+        integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<body>
+    <nav class="navbar navbar-dark bg-primary">
+        <a class="navbar-brand" href="/">
+            <i class="fas fa-chart-pie"></i> Pie Chart
+        </a>
+        <form class="form-inline">
+            <a class="btn btn-warning" href="/"><i class="fas fa-chalkboard"></i> Dashboard</a>
+        </form>
+    </nav>
+    <br>
+    <div class="container">
+        <div id="chart_div" class="text-center"></div>
+    </div>
+    <script type="text/javascript">
+        google.charts.load('current', { packages: ['corechart'] });
+        google.charts.setOnLoadCallback(drawPie);
+
+        function drawPie() {
+            $.ajax({
+                url: 'http://localhost:3001/api/datas',
+                method: 'GET'
+            })
+            .then(data => {
+                let listdata = [];
+                listdata.push(['Letter', 'Frequency']);
+                let itemchart;
+
+                data.forEach(item => {
+                    itemchart = []
+                    itemchart.push(item.letter)
+                    itemchart.push(item.frequency * 100)
+                    listdata.push(itemchart)
+                });
+                console.log(JSON.stringify(listdata));
+
+                var data = google.visualization.arrayToDataTable(listdata);
+                var options = {
+                    title: 'Pie Diagram of Data',
+                    widht: 1100,
+                    height: 550
+                };
+                var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+                chart.draw(data, options);
+            })
+        }
+    </script>
+</body>
+
+</html>

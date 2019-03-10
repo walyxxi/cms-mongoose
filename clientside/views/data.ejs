@@ -1,21 +1,22 @@
 <% include partials/header %>
 <div class="container">
-    <button id="buttonAdd" type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
+    <button id="button-add" type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
     <br><br>
-    <div id="inputAlert" class="alert alert-danger" role="alert"></div>
-    <div id="formAdd" class="card" style="background:whitesmoke">
+    <div id="input-alert" class="alert alert-danger" role="alert"></div>
+    <div id="form-add" class="card" style="background:whitesmoke">
         <div class="card-body">
-            <form class="form-inline" id="addForm">
+            <form class="form-inline" id="add-form">
+                <input id="data-id" type="hidden" value="" />
                 <div class="form-group">
                     <label for="addletter" class="col-sm-2 col-form-label">Letter</label>
                     <div class="col-sm-5">
-                        <input type="text" class="form-control" placeholder="A" id="addLetter" required>
+                        <input type="text" class="form-control" placeholder="A" id="add-letter" required>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="addletter" class="col-sm-3 col-form-label">Frequency</label>
                     <div class="col-sm-5">
-                        <input type="text" class="form-control" placeholder="0.000" id="addFrequency" required>
+                        <input type="text" class="form-control" placeholder="0.000" id="add-frequency" required>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save</button>
@@ -29,13 +30,13 @@
         <div class="form-group">
             <label for="addletter" class="col-sm-2 col-form-label">Letter</label>
             <div class="col-sm-5">
-                <input type="text" class="form-control" placeholder="A" id="searchLetter">
+                <input type="text" class="form-control" placeholder="A" id="search-letter">
             </div>
         </div>
         <div class="form-group">
             <label for="addletter" class="col-sm-3 col-form-label">Frequency</label>
             <div class="col-sm-5">
-                <input type="text" class="form-control" placeholder="0.000" id="searchFrequency">
+                <input type="text" class="form-control" placeholder="0.000" id="search-frequency">
             </div>
         </div>
         <button type="submit" class="btn btn-warning"><i class="fas fa-search"></i> Search</button>
@@ -55,6 +56,7 @@
 </div>
 <script type="text/javascript">
     const API_URL = 'http://localhost:3001/api/datas'
+    const token = '<%= data.token %>'
 
     const listData = (data) => {
         let html = '';
@@ -66,9 +68,9 @@
             html += `<td>${item.frequency}</td>`
             html += `<td style="text-align:center">
                         <button class="btn btn-success btn-edit" data-id="${item._id}"
-                            data-letter="${item.letter}" data-frequency="${item.frequency}">Update</button>
+                            data-letter="${item.letter}" data-frequency="${item.frequency}"><i class="fas fa-edit"></i> Update</button>
                         <button class="btn btn-danger btn-hapus" data-id="${item._id}"
-                            onclick="return confirm('Anda yakin?');">Delete</button>
+                            onclick="return confirm('Anda yakin?');"><i class="fas fa-trash-alt"></i> Delete</button>
                      </td>`
             html += `</tr>`
         })
@@ -77,6 +79,7 @@
 
     const loadData = () => {
         $.ajax({
+            headers: {'x-access-token': token},
             url: `${API_URL}`,
             method: 'GET'
         })
@@ -86,12 +89,13 @@
     }
 
     const findData = () => {
-        let letter = $('#searchLetter').val();
-        let frequency = $('#searchFrequency').val()
+        let letter = $('#search-letter').val();
+        let frequency = $('#search-frequency').val()
         if (isNaN(frequency)) {
             showAlert('Please insert a Number!');
         } else {
             $.ajax({
+                headers: {'x-access-token': token},
                 url: `${API_URL}/search`,
                 method: 'POST',
                 data: {
@@ -106,30 +110,32 @@
     }
 
     const hideAlert = () => {
-        $('#inputAlert').fadeOut(1000);
+        $('#input-alert').fadeOut(1000);
     }
 
     const showAlert = (data) => {
-        $('#inputAlert').show(200);
-        $('#inputAlert').html(data);
+        $('#input-alert').show(200);
+        $('#input-alert').html(data);
         setTimeout(hideAlert, 5000);
     }
 
     const hideFormAdd = () => {
-        $('#formAdd').fadeOut(1000);
-        $('#addLetter').val('');
-        $('#addFrequency').val('');
-        id = '';
+        $('#form-add').fadeOut(1000);
+        $('#add-letter').val('');
+        $('#add-frequency').val('');
+        $('#data-id').val('');
     }
 
     const saveData = () => {
-        let letter = $('#addLetter').val();
-        let frequency = $('#addFrequency').val()
+        let id = $('#data-id').val();
+        let letter = $('#add-letter').val();
+        let frequency = $('#add-frequency').val()
         if (isNaN(frequency)) {
             showAlert('Please insert a Number!');
         } else {
             if (!id) {
                 $.ajax({
+                    headers: {'x-access-token': token},
                     url: `${API_URL}`,
                     method: 'POST',
                     data: {
@@ -138,13 +144,14 @@
                     }
                 })
                 .done(data => {
-                    $('#addLetter').val('');
-                    $('#addFrequency').val('');
-                    $('#formAdd').toggle(300);
+                    $('#add-letter').val('');
+                    $('#add-frequency').val('');
+                    $('#form-add').toggle(300);
                     loadData();
                 })
             } else {
                 $.ajax({
+                    headers: {'x-access-token': token},
                     url: `${API_URL}/${id}`,
                     method: 'PUT',
                     data: {
@@ -153,10 +160,10 @@
                     }
                 })
                 .done(data => {
-                    $('#addLetter').val('');
-                    $('#addFrequency').val('');
-                    id = '';
-                    $('#formAdd').toggle(300);
+                    $('#add-letter').val('');
+                    $('#add-frequency').val('');
+                    $('#data-id').val('');
+                    $('#form-add').toggle(300);
                     loadData();
                 })    
             }
@@ -165,25 +172,29 @@
 
     $(document).ready(() => {
         loadData();
-        $('#formAdd').hide();
-        $('#inputAlert').hide();
+        $('#form-add').hide();
+        $('#input-alert').hide();
 
-        $('#buttonAdd').click(() => {
-            $('#addLetter').val('');
-            $('#addFrequency').val('');
-            id = '';
-            $('#formAdd').toggle(300)
+        $('#button-add').click(() => {
+            $('#add-letter').val('');
+            $('#add-frequency').val('');
+            $('#data-id').val('');
+            $('#form-add').toggle(300)
             setTimeout(hideFormAdd, 20000);
         })
 
-        $('#addForm').submit((e) => {
+        $('#add-form').submit((e) => {
             e.preventDefault();
             saveData();
         })
 
         $('#dataTable tbody').on('click', '.btn-hapus', (e) => {
+            if (!confirm('Anda yakin?')) {
+                loadData();
+            }
             let id = $(e.target).attr('data-id');
             $.ajax({
+                headers: {'x-access-token': token},
                 url: `${API_URL}/${id}`,
                 method: 'DELETE'
             })
@@ -193,21 +204,21 @@
         })
 
         $('#dataTable tbody').on('click', '.btn-edit', (e) => {
-            $('#addLetter').val($(e.target).attr('data-letter'));
-            $('#addFrequency').val($(e.target).attr('data-frequency'));
-            id = $(e.target).attr('data-id');
-            if ($('#formAdd').is(':hidden')) {
-                $('#formAdd').toggle(300)
+            $('#add-letter').val($(e.target).attr('data-letter'));
+            $('#add-frequency').val($(e.target).attr('data-frequency'));
+            $('#data-id').val($(e.target).attr('data-id'));
+            if ($('#form-add').is(':hidden')) {
+                $('#form-add').toggle(300)
             } else {
-                $('#formAdd').show()
+                $('#form-add').show()
             }
             setTimeout(hideFormAdd, 20000);
         })
 
         $('#searchForm').submit((e) => {
             e.preventDefault();
-            $('#formAdd').hide();
-            $('#inputAlert').hide();
+            $('#form-add').hide();
+            $('#input-alert').hide();
             findData();
         })
     })
