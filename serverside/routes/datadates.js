@@ -45,7 +45,7 @@ router.post('/search', helpers.checkToken, (req, res) => {
     let data = [];
     let params = {};
     if (x.letter) {
-        params.letter = x.letter;
+        params.letter = moment(x.letter).format("YYYY-MM-DD");
     }
     if (x.frequency) {
         params.frequency = x.frequency;

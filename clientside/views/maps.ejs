@@ -26,7 +26,10 @@
             <a class="btn btn-warning" href="/"><i class="fas fa-chalkboard"></i> Dashboard</a>
         </form>
     </nav>
-    <div id="map_div" style="width: 1309px; height: 615px"></div>
+    <br style="line-height:10px">
+    <div class="container-fluid">
+        <div id="map_div" style="height: 500px"></div>
+    </div>
     <script type="text/javascript">
         google.charts.load("current", {
             "packages": ["map"],
@@ -41,26 +44,26 @@
                 url: 'http://localhost:3001/api/maps',
                 method: 'GET'
             })
-            .then(data => {
-                let listdata = [];
-                listdata.push(['Lat', 'Long', 'Name']);
+                .then(data => {
+                    let listdata = [];
+                    listdata.push(['Lat', 'Long', 'Name']);
 
-                data.forEach(item => {
-                    let itemchart = []
-                    itemchart.push(item.lat)
-                    itemchart.push(item.lng)
-                    itemchart.push(item.title)
-                    listdata.push(itemchart)
-                });
+                    data.forEach(item => {
+                        let itemchart = []
+                        itemchart.push(item.lat)
+                        itemchart.push(item.lng)
+                        itemchart.push(item.title)
+                        listdata.push(itemchart)
+                    });
 
-                var data = google.visualization.arrayToDataTable(listdata);
+                    var data = google.visualization.arrayToDataTable(listdata);
 
-                var map = new google.visualization.Map(document.getElementById('map_div'));
-                map.draw(data, {
-                    showTooltip: true,
-                    showInfoWindow: true
-                });
-            })
+                    var map = new google.visualization.Map(document.getElementById('map_div'));
+                    map.draw(data, {
+                        showTooltip: true,
+                        showInfoWindow: true
+                    });
+                })
         }
     </script>
 </body>
