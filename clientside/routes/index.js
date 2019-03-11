@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var request = require('superagent');
+const moment = require('moment');
 const helpers = require('../helpers/util');
 
 router.get('/', (req, res) => {
@@ -9,7 +10,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/line', (req, res) => {
-    res.render('line', { title: 'Line', data: req.user });
+    res.render('line', { title: 'Line', data: req.user, moment });
 });
 
 router.get('/pie', (req, res) => {
@@ -18,6 +19,10 @@ router.get('/pie', (req, res) => {
 
 router.get('/bar', (req, res) => {
     res.render('bar', { title: 'Bar', data: req.user });
+});
+
+router.get('/maps', (req, res) => {
+    res.render('maps', { title: 'Maps', data: req.user });
 });
 
 // SIGNUP =================================
@@ -52,6 +57,14 @@ router.get('/home', helpers.isLoggedIn, (req, res) => {
 
 router.get('/data', helpers.isLoggedIn, (req, res) => {
     res.render('data', { title: 'Data', data: req.user, nav: 2 });
+})
+
+router.get('/datadate', helpers.isLoggedIn, (req, res) => {
+    res.render('datadate', { title: 'Data Date', data: req.user, nav: 3, moment });
+})
+
+router.get('/map', helpers.isLoggedIn, (req, res) => {
+    res.render('map', { title: 'Maps', data: req.user, nav: 4, moment });
 })
 
 // LOGOUT ==============================

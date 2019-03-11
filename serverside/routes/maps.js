@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const helpers = require('../helpers/util');
 const Map = require('../models/map');
 
 router.get('/', (req, res) => {
@@ -10,7 +11,7 @@ router.get('/', (req, res) => {
     })
 })
 
-router.post('/', (req, res) => {
+router.post('/', helpers.checkToken, (req, res) => {
     let x = req.body;
     Map.create({
         title: x.title,
@@ -32,7 +33,7 @@ router.post('/', (req, res) => {
     })
 })
 
-router.post('/search', (req, res) => {
+router.post('/search', helpers.checkToken, (req, res) => {
     let x = req.body;
     Map.find({ title: x.title }).then(data => {
         res.status(200).send(data);
@@ -41,7 +42,7 @@ router.post('/search', (req, res) => {
     })
 })
 
-router.get('/:id', (req, res) => {
+router.get('/:id', helpers.checkToken, (req, res) => {
     let id = req.params.id;
     Map.findOne({ _id: id }).then(data => {
         res.status(200).send({
@@ -59,10 +60,10 @@ router.get('/:id', (req, res) => {
     })
 })
 
-router.put('/:id', (req, res) => {
+router.put('/:id', helpers.checkToken, (req, res) => {
     let x = req.body;
     let id = req.params.id;
-    Map.findOneAndUpdate({ _id: id }, {
+    Map.updateOne({ _id: id }, {
         $set: {
             title: x.title,
             lat: x.lat,
@@ -84,7 +85,7 @@ router.put('/:id', (req, res) => {
     })
 })
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', helpers.checkToken, (req, res) => {
     let id = req.params.id;
     Map.findOneAndDelete({ _id: id }).then(data => {
         res.status(200).send({

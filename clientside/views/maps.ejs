@@ -1,8 +1,10 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 
 <head>
     <title><%= title %></title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
@@ -10,51 +12,54 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+
+    </style>
+</head>
 
 <body>
     <nav class="navbar navbar-dark bg-primary">
         <a class="navbar-brand" href="/">
-            <i class="fas fa-chart-bar"></i> Line Chart
+            <i class="fas fa-map"></i> Maps
         </a>
         <form class="form-inline">
             <a class="btn btn-warning" href="/"><i class="fas fa-chalkboard"></i> Dashboard</a>
         </form>
     </nav>
-    <br>
-    <div class="container">
-        <div id="chart_div"></div>
-    </div>
+    <div id="map_div" style="width: 1309px; height: 615px"></div>
     <script type="text/javascript">
-        google.charts.load('current', { packages: ['corechart', 'bar'] });
-        google.charts.setOnLoadCallback(drawLine);
+        google.charts.load("current", {
+            "packages": ["map"],
+            // Note: you will need to get a mapsApiKey for your project.
+            // See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
+            "mapsApiKey": "AIzaSyDQ9ow9g-1yKVCygWyXXro-9x3Z5_EVI0o"
+        });
+        google.charts.setOnLoadCallback(drawChart);
 
-        function drawLine() {
+        function drawChart() {
             $.ajax({
-                url: 'http://localhost:3001/api/datadates',
+                url: 'http://localhost:3001/api/maps',
                 method: 'GET'
             })
             .then(data => {
-                var month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                 let listdata = [];
-                listdata.push(['Letter', 'Frequency']);
+                listdata.push(['Lat', 'Long', 'Name']);
 
                 data.forEach(item => {
                     let itemchart = []
-                    let date = new Date(item.letter)
-                    itemchart.push(`${month[date.getMonth()]} ${date.getFullYear()}`)
-                    itemchart.push(item.frequency)
+                    itemchart.push(item.lat)
+                    itemchart.push(item.lng)
+                    itemchart.push(item.title)
                     listdata.push(itemchart)
                 });
-                console.log(JSON.stringify(listdata));
 
                 var data = google.visualization.arrayToDataTable(listdata);
-                var options = {
-                    title: 'Line Diagram of Data Date',
-                    widht: 1000,
-                    height: 500
-                };
-                var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-                chart.draw(data, options);
+
+                var map = new google.visualization.Map(document.getElementById('map_div'));
+                map.draw(data, {
+                    showTooltip: true,
+                    showInfoWindow: true
+                });
             })
         }
     </script>

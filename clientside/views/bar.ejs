@@ -36,10 +36,9 @@
             .then(data => {
                 let listdata = [];
                 listdata.push(['Letter', 'Frequency']);
-                let itemchart;
 
                 data.forEach(item => {
-                    itemchart = []
+                    let itemchart = []
                     itemchart.push(item.letter)
                     itemchart.push(item.frequency * 1000)
                     listdata.push(itemchart)

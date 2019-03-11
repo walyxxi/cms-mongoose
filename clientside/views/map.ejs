@@ -8,15 +8,21 @@
             <form class="form-inline" id="add-form">
                 <input id="data-id" type="hidden" value="" />
                 <div class="form-group">
-                    <label for="addletter" class="col-sm-2 col-form-label">Letter</label>
-                    <div class="col-sm-5">
-                        <input type="text" class="form-control" placeholder="A" id="add-letter" required>
+                    <label for="addletter" class="col-sm-2 col-form-label">Title</label>
+                    <div class="col-xs-2">
+                        <input type="text" class="form-control" placeholder="A" id="add-title" required>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="addletter" class="col-sm-3 col-form-label">Frequency</label>
-                    <div class="col-sm-5">
-                        <input type="text" class="form-control" placeholder="0.000" id="add-frequency" required>
+                    <label for="addletter" class="col-sm-3 col-form-label">Latitude</label>
+                    <div class="col-xs-2">
+                        <input type="text" class="form-control" placeholder="0.000" id="add-lat" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="addletter" class="col-sm-3 col-form-label">Longitude</label>
+                    <div class="col-xs-2">
+                        <input type="text" class="form-control" placeholder="0.000" id="add-lng" required>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save</button>
@@ -28,15 +34,21 @@
     <hr>
     <form class="form-inline">
         <div class="form-group">
-            <label for="addletter" class="col-sm-2 col-form-label">Letter</label>
-            <div class="col-sm-5">
-                <input type="text" class="form-control" placeholder="A" id="search-letter">
+            <label for="addletter" class="col-sm-2 col-form-label">Title</label>
+            <div class="col-xs-2">
+                <input type="text" class="form-control" placeholder="A" id="search-title">
             </div>
         </div>
         <div class="form-group">
-            <label for="addletter" class="col-sm-3 col-form-label">Frequency</label>
-            <div class="col-sm-5">
-                <input type="text" class="form-control" placeholder="0.000" id="search-frequency">
+            <label for="addletter" class="col-sm-3 col-form-label">Latitude</label>
+            <div class="col-xs-2">
+                <input type="text" class="form-control" placeholder="0.000" id="search-lat">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="addletter" class="col-sm-3 col-form-label">Longitude</label>
+            <div class="col-xs-2">
+                <input type="text" class="form-control" placeholder="0.000" id="search-lng">
             </div>
         </div>
     </form>
@@ -46,7 +58,8 @@
             <th>#</th>
             <th>ID</th>
             <th>Letter</th>
-            <th>Frequency</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
             <th style="text-align:center">Action</th>
         </thead>
         <tbody>
@@ -54,7 +67,7 @@
     </table>
 </div>
 <script type="text/javascript">
-    const API_URL = 'http://localhost:3001/api/datas'
+    const API_URL = 'http://localhost:3001/api/maps'
     const token = '<%= data.token %>'
 
     const listData = (data) => {
@@ -63,11 +76,12 @@
             html += `<tr>`
             html += `<td>${index + 1}</td>`
             html += `<td>${item._id}</td>`
-            html += `<td>${item.letter}</td>`
-            html += `<td>${item.frequency}</td>`
+            html += `<td>${item.title}</td>`
+            html += `<td>${item.lat}</td>`
+            html += `<td>${item.lng}</td>`
             html += `<td style="text-align:center">
                         <button class="btn btn-success btn-edit" data-id="${item._id}"
-                            data-letter="${item.letter}" data-frequency="${item.frequency}"><i class="fas fa-edit"></i> Update</button>
+                            data-title="${item.title}" data-lat="${item.lat}" data-lng="${item.lng}"><i class="fas fa-edit"></i> Update</button>
                         <button class="btn btn-danger btn-hapus" data-id="${item._id}"
                             onclick="return confirm('Anda yakin?');"><i class="fas fa-trash-alt"></i> Delete</button>
                      </td>`
@@ -88,9 +102,10 @@
     }
 
     const findData = () => {
-        let letter = $('#search-letter').val();
-        let frequency = $('#search-frequency').val()
-        if (isNaN(frequency)) {
+        let title = $('#search-title').val();
+        let lat = $('#search-lat').val();
+        let lng = $('#search-lng').val();
+        if (isNaN(lat)) {
             showAlert('Please insert a Number!');
         } else {
             $.ajax({
@@ -98,8 +113,9 @@
                 url: `${API_URL}/search`,
                 method: 'POST',
                 data: {
-                    letter: letter,
-                    frequency: frequency
+                    title: title,
+                    lat: lat,
+                    lng: lng
                 }
             })
             .then(data => {
@@ -120,16 +136,18 @@
 
     const hideFormAdd = () => {
         $('#form-add').fadeOut(1000);
-        $('#add-letter').val('');
-        $('#add-frequency').val('');
+        $('#add-title').val('');
+        $('#add-lat').val('');
+        $('#add-lng').val('');
         $('#data-id').val('');
     }
 
     const saveData = () => {
         let id = $('#data-id').val();
-        let letter = $('#add-letter').val();
-        let frequency = $('#add-frequency').val()
-        if (isNaN(frequency)) {
+        let title = $('#add-title').val();
+        let lat = $('#add-lat').val();
+        let lng = $('#add-lng').val();
+        if (isNaN(lat)) {
             showAlert('Please insert a Number!');
         } else {
             if (!id) {
@@ -138,13 +156,15 @@
                     url: `${API_URL}`,
                     method: 'POST',
                     data: {
-                        letter: letter,
-                        frequency: frequency
+                        title: title,
+                        lat: lat,
+                        lng: lng
                     }
                 })
                 .done(data => {
-                    $('#add-letter').val('');
-                    $('#add-frequency').val('');
+                    $('#add-title').val('');
+                    $('#add-lat').val('');
+                    $('#add-lng').val('');
                     $('#form-add').toggle(300);
                     loadData();
                 })
@@ -154,13 +174,15 @@
                     url: `${API_URL}/${id}`,
                     method: 'PUT',
                     data: {
-                        letter: letter,
-                        frequency: frequency
+                        title: title,
+                        lat: lat,
+                        lng: lng
                     }
                 })
                 .done(data => {
-                    $('#add-letter').val('');
-                    $('#add-frequency').val('');
+                    $('#add-title').val('');
+                    $('#add-lat').val('');
+                    $('#add-lng').val('');
                     $('#data-id').val('');
                     $('#form-add').toggle(300);
                     loadData();
@@ -175,11 +197,12 @@
         $('#input-alert').hide();
 
         $('#button-add').click(() => {
-            $('#add-letter').val('');
-            $('#add-frequency').val('');
+            $('#add-title').val('');
+            $('#add-lat').val('');
+            $('#add-lng').val('');
             $('#data-id').val('');
             $('#form-add').toggle(300)
-            setTimeout(hideFormAdd, 20000);
+            setTimeout(hideFormAdd, 60000);
         })
 
         $('#add-form').submit((e) => {
@@ -203,24 +226,31 @@
         })
 
         $('#dataTable tbody').on('click', '.btn-edit', (e) => {
-            $('#add-letter').val($(e.target).attr('data-letter'));
-            $('#add-frequency').val($(e.target).attr('data-frequency'));
+            $('#add-title').val($(e.target).attr('data-title'));
+            $('#add-lat').val($(e.target).attr('data-lat'));
+            $('#add-lng').val($(e.target).attr('data-lng'));
             $('#data-id').val($(e.target).attr('data-id'));
             if ($('#form-add').is(':hidden')) {
                 $('#form-add').toggle(300)
             } else {
                 $('#form-add').show()
             }
-            setTimeout(hideFormAdd, 20000);
+            setTimeout(hideFormAdd, 60000);
         })
 
-        $('#search-letter').keyup((e) => {
+        $('#search-title').keyup((e) => {
             $('#form-add').hide();
             $('#input-alert').hide();
             findData();
         })
 
-        $('#search-frequency').keyup((e) => {
+        $('#search-lat').keyup((e) => {
+            $('#form-add').hide();
+            $('#input-alert').hide();
+            findData();
+        })
+
+        $('#search-lng').keyup((e) => {
             $('#form-add').hide();
             $('#input-alert').hide();
             findData();
