@@ -64,7 +64,7 @@ router.get('/datadate', helpers.isLoggedIn, (req, res) => {
 })
 
 router.get('/map', helpers.isLoggedIn, (req, res) => {
-    res.render('map', { title: 'Maps', data: req.user, nav: 4, moment });
+    res.render('map', { title: 'Maps', data: req.user, nav: 4 });
 })
 
 // LOGOUT ==============================
